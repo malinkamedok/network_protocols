@@ -18,15 +18,22 @@ func main() {
 
 	fmt.Println("Connected")
 
-	buffer := make([]byte, 1024)
-
 	var bufferResult []string
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 15; i++ {
+		buffer := make([]byte, 1078)
+
 		n, err := conn.Read(buffer)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return
+		}
+		if n <= 2 {
+			n, err = conn.Read(buffer)
+			if err != nil {
+				fmt.Println("Error:", err)
+				return
+			}
 		}
 
 		bufferResult = append(bufferResult, string(buffer[:n]))
@@ -35,28 +42,46 @@ func main() {
 		//fmt.Printf("Received: %s\n", buffer[:n])
 	}
 
+	//fmt.Println(string(buffer))
+
 	var result []string
 
 	//result1 := string(buffer)
 
-	for i := 0; i < 10; i++ {
+	var empty int
+
+	for i := 0; i < 15; i++ {
 
 		result1 := bufferResult[i]
 
 		if strings.Contains(result1, "Student16") {
+
+			_, a, f := strings.Cut(result1, "Student16")
+			if f {
+				a = "Student16" + a
+			}
+
 			//fmt.Println(strings.Index(result1, "Student16"))
 			//fmt.Println(result1[646:])
-			before, _, found := strings.Cut(result1[646:], " Student17")
+			before, _, found := strings.Cut(a, " Student17")
 			if found {
-				fmt.Println(before)
+				//fmt.Println(before)
 				result = append(result, before)
 			} else {
 				fmt.Println("not found")
 			}
+		} else {
+			empty++
 		}
 	}
 
-	fmt.Println(result)
+	//fmt.Println("empty: ", empty)
+	//fmt.Println(result)
+
+	for i, data := range result {
+		fmt.Printf("Данные из пакета номер %d\n", i)
+		fmt.Println(data)
+	}
 
 	//fmt.Println(result1)
 }
